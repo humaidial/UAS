@@ -23,7 +23,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = '';
+
+// Settingan Untuk Database
+$config['database_host']	= 'localhost';
+$config['database_user']	= 'root';
+$config['database_pass']	= '';
+$config['database_name']	= 'sim_penjualan';
+
+//Settingan Base URL
+$config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+$config['base_url'] .= "://".$_SERVER['HTTP_HOST'];
+$config['base_url'] .= preg_replace('@/+$@','',dirname($_SERVER['SCRIPT_NAME'])).'/';
+
+//Setingan Folder Assets dan Folder didalamnya
+$config['assets']			= $config['base_url'].'assets/';
+$config['css']				= $config['assets'].'css/';
+$config['js']				= $config['assets'].'js/';
+$config['img']				= $config['assets'].'img/';
+$config['plugin']			= $config['assets'].'plugin/';
+$config['bootstrap']		= $config['plugin'].'bootstrap-3.3.6 /';
+$config['font-awesome']		= $config['plugin'].'font-awesome/';
+
+//Setingan Judul & Footer Web & Yang sudah diedit
+$config['web_title']		= "Aplikasi Penjualan Vespa";
+$config['web_footer']		= $config['web_title']." &copy; 2018. Version 1.0. Programmed & Designed by Medik & Wildan";
+
 
 /*
 |--------------------------------------------------------------------------
