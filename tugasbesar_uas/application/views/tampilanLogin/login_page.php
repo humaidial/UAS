@@ -52,3 +52,37 @@
 		<p class='footer'><?php echo config_item('web_footer'); ?></p>
 	</div>
 </div>
+
+
+<script>
+$(function(){
+	//------------------------Proses Login Ajax-------------------------//
+	$('#FormLogin').submit(function(e){
+		e.preventDefault();
+		$.ajax({
+			url: $(this).attr('action'),
+			type: "POST",
+			cache: false,
+			data: $(this).serialize(),
+			dataType:'json',
+			success: function(json){
+				//response dari json_encode di controller
+
+				if(json.status == 1){ window.location.href = json.url_home; }
+				if(json.status == 0){ $('#ResponseInput').html(json.pesan); }
+				if(json.status == 2){
+					$('#ResponseInput').html(json.pesan);
+					$('#InputPassword').val('');
+				}
+			}
+		});
+	});
+
+	//-----------------------Ketika Tombol Reset Diklik-----------------//
+	$('#ResetData').click(function(){
+		$('#ResponseInput').html('');
+	});
+});
+</script>
+
+<?php $this->load->view('include/footer'); ?>
