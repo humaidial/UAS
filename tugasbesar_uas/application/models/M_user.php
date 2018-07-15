@@ -143,4 +143,39 @@ class M_user extends CI_Model
 		return $this->db->query($sql);		
 	}
 
+	function update_user($id_user, $username, $password, $nama, $id_akses, $status)
+	{
+		$dt['username'] = $username;
+
+		if( ! empty($password)){
+			$dt['password'] = sha1($password);
+		}
+
+		$dt['nama']		= $nama;
+		$dt['id_akses']	= $id_akses;
+		$dt['status']	= $status;
+		
+		return $this->db
+			->where('id_user', $id_user)
+			->update('pj_user', $dt);
+	}
+
+	function cek_password($pass)
+	{
+		return $this->db
+			->select('id_user')
+			->where('password', sha1($pass))
+			->where('id_user', $this->session->userdata('ap_id_user'))
+			->limit(1)
+			->get('pj_user');
+	}
+
+	function update_password($pass_new)
+	{
+		$dt['password'] = sha1($pass_new);
+		return $this->db
+				->where('id_user', $this->session->userdata('ap_id_user'))
+				->update('pj_user', $dt);
+	}
+
 }
