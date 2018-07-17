@@ -7,9 +7,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * ------------------------------------------------------------------------
  */
 
-class Penjualan extends MY_Controller
+class Penjualan extends MY_Controller 
 {
-	
 	function __construct()
 	{
 		parent::__construct();
@@ -30,15 +29,15 @@ class Penjualan extends MY_Controller
 		{
 			if($_POST)
 			{
-				 if( ! empty($_POST['kode_barang']))
-				 {
-				 	$total = 0;
-				 	foreach ($_POST['kode_barang'] as $k)
-				 	{
-				 		if( ! empty($k)){$total++; }
-				 	}
+				if( ! empty($_POST['kode_barang']))
+				{
+					$total = 0;
+					foreach($_POST['kode_barang'] as $k)
+					{
+						if( ! empty($k)){ $total++; }
+					}
 
-				 	if($total > 0)
+					if($total > 0)
 					{
 						$this->load->library('form_validation');
 						$this->form_validation->set_rules('nomor_nota','Nomor Nota','trim|required|max_length[40]|alpha_numeric|callback_cek_nota[nomor_nota]');
@@ -130,7 +129,9 @@ class Penjualan extends MY_Controller
 						}
 						else
 						{
-							echo json_encode(array('status' => 0, 'pesan' => validation_errors("<font color='red'>- ","</font><br/>")));
+							echo json_encode(array(
+								'status' => 0, 
+								'pesan' => validation_errors("<font color='red'>- ","</font><br />")));
 						}
 					}
 					else
@@ -291,22 +292,22 @@ class Penjualan extends MY_Controller
 	{
 		if($this->input->is_ajax_request())
 		{
-			$keyword	= $this->input->post('keyword');
-			$registered = $this->input->post('registered');
+			$keyword 	= $this->input->post('keyword');
+			$registered	= $this->input->post('registered');
 
 			$this->load->model('m_barang');
 
-			$barang 	= $this->m_barang->cari_kode($keyword, $registered);
+			$barang = $this->m_barang->cari_kode($keyword, $registered);
 
 			if($barang->num_rows() > 0)
 			{
-				$json['status']		= 1;
-				$json['datanya']	= "<ul id='daftar-autocomplete'>";
-				foreach ($barang->result() as $b) 
+				$json['status'] 	= 1;
+				$json['datanya'] 	= "<ul id='daftar-autocomplete'>";
+				foreach($barang->result() as $b)
 				{
 					$json['datanya'] .= "
 						<li>
-							<b>Kode</b> :
+							<b>Kode</b> : 
 							<span id='kodenya'>".$b->kode_barang."</span> <br />
 							<span id='barangnya'>".$b->nama_barang."</span>
 							<span id='harganya' style='display:none;'>".$b->harga."</span>
@@ -317,7 +318,7 @@ class Penjualan extends MY_Controller
 			}
 			else
 			{
-				$json['status'] = 0;
+				$json['status'] 	= 0;
 			}
 
 			echo json_encode($json);
@@ -346,7 +347,7 @@ class Penjualan extends MY_Controller
 
 	public function history()
 	{
-		$level 	= $this->session->userdata('ap_level');
+		$level = $this->session->userdata('ap_level');
 		if($level == 'admin' OR $level == 'kasir' OR $level == 'keuangan')
 		{
 			$this->load->view('penjualan/transaksi_history');
@@ -405,7 +406,7 @@ class Penjualan extends MY_Controller
 
 			$dt['detail'] = $this->m_penjualan_detail->get_detail($id_penjualan);
 			$dt['master'] = $this->m_penjualan_master->get_baris($id_penjualan)->row();
-
+			
 			$this->load->view('penjualan/transaksi_history_detail', $dt);
 		}
 	}
@@ -503,45 +504,44 @@ class Penjualan extends MY_Controller
 			if($_POST)
 			{
 				$this->load->library('form_validation');
-				$this->form_validation->set_rules('nama', 'Nama', 'trim|required|alpha_spaces|max_length[40]');
-				$this->form_validation->set_rules('alamat', 'Alamat', 'trim|required|max_length[1000]');
-				$this->form_validation->set_rules('telepon', 'Telepon / Handphone', 'trim|required|numeric|max_length[40]');
-				$this->form_validation->set_rules('info', 'Info Tambahan Lainnya', 'trim|max_length[1000]');
+				$this->form_validation->set_rules('nama','Nama','trim|required|alpha_spaces|max_length[40]');
+				$this->form_validation->set_rules('alamat','Alamat','trim|required|max_length[1000]');
+				$this->form_validation->set_rules('telepon','Telepon / Handphone','trim|required|numeric|max_length[40]');
+				$this->form_validation->set_rules('info','Info Tambahan Lainnya','trim|max_length[1000]');
 
-				$this->form_validation->set_message('alpha_spaces', '%s Harus alphabet !');
-				$this->form_validation->set_message('numeric', '%s Harus angka !');
-				$this->form_validation->set_message('required', '%s Harus diisi !');
+				$this->form_validation->set_message('alpha_spaces','%s harus alphabet !');
+				$this->form_validation->set_message('numeric','%s harus angka !');
+				$this->form_validation->set_message('required','%s harus diisi !');
 
-				if ($this->form_validation->run() == TRUE) 
+				if($this->form_validation->run() == TRUE)
 				{
 					$this->load->model('m_pelanggan');
-					$nama		= $this->input->post('nama');
+					$nama 		= $this->input->post('nama');
 					$alamat 	= $this->clean_tag_input($this->input->post('alamat'));
 					$telepon 	= $this->input->post('telepon');
-					$info 	 	= $this->clean_tag_input($this->input->post('info'));
-					$unique 	= time().$this->session->userdata('ap_id_user');
+					$info 		= $this->clean_tag_input($this->input->post('info'));
 
+					$unique		= time().$this->session->userdata('ap_id_user');
 					$insert 	= $this->m_pelanggan->tambah_pelanggan($nama, $alamat, $telepon, $info, $unique);
 					if($insert)
 					{
 						$id_pelanggan = $this->m_pelanggan->get_dari_kode($unique)->row()->id_pelanggan;
 						echo json_encode(array(
-							'status' 		=> 1,
-							'pesan'			=> "<div class='alert alert-success'><i class='fa fa-check'></i> <b>".$nama."</b> berhasil ditambahkan sebagai pelanggan.</div>",
-
-							'id_pelanggan' 	=> $id_pelanggan,
-							'nama' 			=> $nama,
-							'alamat' 		=> preg_replace("/\r\n|\r|\n/",'<br />', $alamat),
-							'telepon' 		=> $telepon,
-							'info' 			=> (empty($info)) ? "<small><i>Tidak ada</i></small>" : preg_replace("/\r\n|\r|\n/",'<br />', $info)
+							'status' => 1,
+							'pesan' => "<div class='alert alert-success'><i class='fa fa-check'></i> <b>".$nama."</b> berhasil ditambahkan sebagai pelanggan.</div>",
+							'id_pelanggan' => $id_pelanggan,
+							'nama' => $nama,
+							'alamat' => preg_replace("/\r\n|\r|\n/",'<br />', $alamat),
+							'telepon' => $telepon,
+							'info' => (empty($info)) ? "<small><i>Tidak ada</i></small>" : preg_replace("/\r\n|\r|\n/",'<br />', $info)						
 						));
 					}
 					else
 					{
 						$this->query_error();
 					}
-				} 
-				else 
+				}
+				else
 				{
 					$this->input_error();
 				}
@@ -614,7 +614,7 @@ class Penjualan extends MY_Controller
 	public function pelanggan_hapus($id_pelanggan)
 	{
 		$level = $this->session->userdata('ap_level');
-		if($level =='admin')
+		if($level == 'admin')
 		{
 			if($this->input->is_ajax_request())
 			{
@@ -634,5 +634,5 @@ class Penjualan extends MY_Controller
 				}
 			}
 		}
-	}				 	
+	}
 }

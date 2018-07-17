@@ -1,11 +1,7 @@
 <?php
-/**
-* 
-*/
-class M_user extends CI_Model
+class M_user extends CI_Model 
 {
-	
-	function validasi_login($username,$password)
+	function validasi_login($username, $password)
 	{
 		return $this->db
 			->select('a.id_user, a.username, a.password, a.nama, b.label AS level, b.level_akses AS level_caption', false)
@@ -18,26 +14,25 @@ class M_user extends CI_Model
 			->get('pj_user a');
 	}
 
-	function is_valid($u,$p)
+	function is_valid($u, $p)
 	{
 		return $this->db
 			->select('id_user')
 			->where('id_user', $u)
 			->where('password', $p)
-			->where('status', 'Aktif')
+			->where('status','Aktif')
 			->where('dihapus','tidak')
 			->limit(1)
 			->get('pj_user');
-
 	}
 
 	function list_kasir()
 	{
 		return $this->db
-			->select('id_user','nama')
+			->select('id_user, nama')
 			->where('status', 'Aktif')
 			->where('dihapus', 'tidak')
-			->order_by('nama', 'asc')
+			->order_by('nama','asc')
 			->get('pj_user');
 	}
 
@@ -111,36 +106,36 @@ class M_user extends CI_Model
 	function tambah_baru($username, $password, $nama, $id_akses, $status)
 	{
 		$dt = array(
-			'username' 	=> $username,
-			'password' 	=> sha1,($password),
-			'nama'		=> $nama,
-			'id_akses'	=> $id_akses,
-			'status'	=> $status,
-			'dihapus'	=> 'tidak'
+			'username' => $username,
+			'password' => sha1($password),
+			'nama' => $nama,
+			'id_akses' => $id_akses,
+			'status' => $status,
+			'dihapus' => 'tidak'
 		);
 
 		return $this->db->insert('pj_user', $dt);
-
 	}
 
 	function get_baris($id_user)
 	{
 		$sql = "
-			SELECT
-				a.'id_user',
-				a.'username',
-				a.'nama',
-				a.'id_akses',
-				a.'status',
-				b.'level'
-			FROM
-				'pj_user' a
-				LEFT JOIN 'pj_akses' b on a.'id_akses' = b.'id_akses'
-				WHERE a.'id_user' = '".$id_user."'
-				LIMIT 1
-				";
+			SELECT 
+				a.`id_user`,
+				a.`username`,
+				a.`nama`,
+				a.`id_akses`,
+				a.`status`,
+				b.`label` 
+			FROM 
+				`pj_user` a 
+				LEFT JOIN `pj_akses` b ON a.`id_akses` = b.`id_akses` 
+			WHERE 
+				a.`id_user` = '".$id_user."' 
+			LIMIT 1
+		";
 
-		return $this->db->query($sql);		
+		return $this->db->query($sql);
 	}
 
 	function update_user($id_user, $username, $password, $nama, $id_akses, $status)
@@ -177,5 +172,4 @@ class M_user extends CI_Model
 				->where('id_user', $this->session->userdata('ap_id_user'))
 				->update('pj_user', $dt);
 	}
-
 }

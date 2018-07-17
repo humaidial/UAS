@@ -78,6 +78,4 @@ $(document).on('click', '#GantiPass', function(e){
 	$('#ModalContent').load($(this).attr('href'));
 	$('#ModalGue').modal('show');
 });
-</script>	 
-
-				}
+</script>

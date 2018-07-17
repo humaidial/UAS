@@ -7,18 +7,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * ------------------------------------------------------------------------
  */
 
-Class User extends MY_Controller
+class User extends MY_Controller 
 {
 	public function index()
 	{
-		$level = $this->$this->session->userdata('ap_level');
+		$level = $this->session->userdata('ap_level');
 		if($level !== 'admin')
 		{
-			exit();	
+			exit();
 		}
 		else
 		{
-			$this->load->view('user/userdata');
+			$this->load->view('user/user_data');
 		}
 	}
 
@@ -65,9 +65,9 @@ Class User extends MY_Controller
 			"data"            => $data
 			);
 
-			echo json_encode($json_data);
+		echo json_encode($json_data);
 	}
-	
+
 	public function hapus($id_user)
 	{
 		$level = $this->session->userdata('ap_level');
@@ -80,16 +80,18 @@ Class User extends MY_Controller
 			if($this->input->is_ajax_request())
 			{
 				$this->load->model('m_user');
-				$hapus = $this->m_user->hapus_user('$id_user');
-				if($Hapus)
+				$hapus = $this->m_user->hapus_user($id_user);
+				if($hapus)
 				{
 					echo json_encode(array(
-					"pesan" => "<font color='green'><i class='fa fa-check'></i> Data berhasil dihapus !</font>"));
+						"pesan" => "<font color='green'><i class='fa fa-check'></i> Data berhasil dihapus !</font>
+					"));
 				}
 				else
 				{
 					echo json_encode(array(
-					"pesan" => "<font color='red'><i class='fa fa-warning'></i> Terjadi kesalahan, coba lagi !</font>"));	
+						"pesan" => "<font color='red'><i class='fa fa-warning'></i> Terjadi kesalahan, coba lagi !</font>
+					"));
 				}
 			}
 		}
@@ -110,6 +112,7 @@ Class User extends MY_Controller
 				$this->form_validation->set_rules('username','Username','trim|required|max_length[40]|callback_exist_username[username]|alpha_numeric');
 				$this->form_validation->set_rules('password','Password','trim|required|max_length[60]');
 				$this->form_validation->set_rules('nama','Nama Lengkap','trim|required|max_length[50]|alpha_spaces');
+				
 				$this->form_validation->set_message('required','%s harus diisi !');
 				$this->form_validation->set_message('exist_username','%s sudah ada di database, pilih username lain yang unik !');
 				$this->form_validation->set_message('alpha_spaces', '%s harus alphabet');
@@ -126,7 +129,7 @@ Class User extends MY_Controller
 					$status		= $this->input->post('status');
 
 					$insert = $this->m_user->tambah_baru($username, $password, $nama, $id_akses, $status);
-
+					
 
 					if($insert > 0)
 					{
@@ -142,107 +145,111 @@ Class User extends MY_Controller
 				}
 				else
 				{
-					$this->load->model('m_akses');
-					$dt['akses']	= $this->m_akses->get_all();
-					$this->load->view('user/user_tambah', $dt);
+					$this->input_error();
 				}
 			}
-		}
-
-		public function exist_username($username)
-		{
-			 $this->load->model('m_user');
-			 $cek_user = $this->m_user->cek_username($username);
-
-			 if($cek_user->num_rows() > 0)
-			 {
-			 	return FALSE;
-			 }
-
-			 return TRUE;
-		}
-
-		public function edit ($id_user = NULL )
-		{
-			$level = $this->session->userdata('ap_level');
-			if($level !== 'admin')
-			{
-				exit();
-			}		
 			else
 			{
-				if( ! empty($id_user))
+				$this->load->model('m_akses');
+				$dt['akses'] 	= $this->m_akses->get_all();
+				$this->load->view('user/user_tambah', $dt);
+			}
+		}
+	}
+
+	public function exist_username($username)
+	{
+		$this->load->model('m_user');
+		$cek_user = $this->m_user->cek_username($username);
+
+		if($cek_user->num_rows() > 0)
+		{
+			return FALSE;
+		}
+		return TRUE;
+	}
+
+	public function edit($id_user = NULL)
+	{
+		$level = $this->session->userdata('ap_level');
+		if($level !== 'admin')
+		{
+			exit();
+		}
+		else
+		{
+			if( ! empty($id_user))
+			{
+				if($this->input->is_ajax_request())
 				{
-					if($this->input->is_ajax_request())
+					$this->load->model('m_user');
+					
+					if($_POST)
 					{
-						$this->load->model('m_user');
-						if($_POST)
+						$this->load->library('form_validation');
+
+						$username 		= $this->input->post('username');
+						$username_old	= $this->input->post('username_old');
+
+						$callback			= '';
+						if($username !== $username_old){
+							$callback = "|callback_exist_username[username]";
+						}
+
+						$this->form_validation->set_rules('username','Username','trim|required|alpha_numeric|max_length[40]'.$callback);
+						$this->form_validation->set_rules('password','Password','trim|max_length[60]');
+						$this->form_validation->set_rules('nama','Nama Lengkap','trim|required|max_length[50]|alpha_spaces');
+						
+						$this->form_validation->set_message('required','%s harus diisi !');
+						$this->form_validation->set_message('exist_username','%s sudah ada di database, pilih username lain yang unik !');
+						$this->form_validation->set_message('alpha_spaces', '%s harus alphabet');
+						$this->form_validation->set_message('alpha_numeric', '%s Harus huruf / angka !');
+
+						if($this->form_validation->run() == TRUE)
 						{
-							$this->load->library('form_validation');
-							$username = $this->input->post('username');
-							$username_old = $this->input->post('username_old');
+							$password 	= $this->input->post('password');
+							$nama		= $this->input->post('nama');
+							$id_akses	= $this->input->post('id_akses');
+							$status		= $this->input->post('status');
 
-							$callback 	= '';
-							if($username !== $username_old)
+							$update = $this->m_user->update_user($id_user, $username, $password, $nama, $id_akses, $status);
+							if($update)
 							{
-								$callback= "|callback_exist_username[username]"
+								$label = $this->input->post('label');
+								if($label == 'admin')
+								{
+									$this->session->set_userdata('ap_nama', $nama);
+								}
+
+								echo json_encode(array(
+									'status' => 1,
+									'pesan' => "<div class='alert alert-success'><i class='fa fa-check'></i> Data user berhasil diupdate.</div>"
+								));
 							}
-
-							$this->form_validation->set_rules('username', 'Username', 'trim|required|alpha_numeric|max_length[40]'.$callback);
-							$this->form_validation->set_rules('password', 'Password', 'trim|max_length[60]');
-							$this->form_validation->set_rules('nama', 'Nama Lengkap', 'trim|required|max_length[50]|alpha_spaces');
-							$this->form_validation->set_message('required', '%s harus diisi BOS !!');
-							$this->form_validation->set_message('exist_username', '%s sudah ada di database, pilih username lain yang unik !!');
-							$this->form_validation->set_message('alpha_spaces', '%s harus alphabet');
-							$this->form_validation->set_message('alpha_numeric', '%s harus hurus / angka !!');
-
-							if ($this->form_validation->run() == TRUE) 
-							{
-								$password 	= $this->input->post('password');
-								$nama 		= $this->input->post('nama');
-								$id_akses	= $this->input->post('id_akses');
-								$status		= $this->input->post('status');
-
-								$update $this->m_user->update_user($id_user, $username, $password, $nama, $id_akses, $status);
-								if($update)
-								{
-									$label = $this->input->post('label');
-									if($label == 'admin')
-									{
-										$this->session->set_userdata('ap_nama', $nama);
-									}
-
-									echo json_encode(array(
-										'status' 	=> 1,
-										'pesan'		=> "<div_class = 'alert alert-success'><'i class=fa fa-check'></i> Data Berhasil di UPDATE !</div>"	
-									));
-								}
-							
-								else 
-								{
-									$this->query_error();
-								}
-							} 
 							else
 							{
-								$this->input_error();
+								$this->query_error();
 							}
-
 						}
 						else
 						{
-							$this->load->model('m_akses');
-							$dt['user'] 	= $this->m_user->get_baris($id_user)->row();
-							$dt['akses']	= $this->m_akses->get_all();
-							$this->load->view('user/user_edit', $dt);
+							$this->input_error();
 						}
+					}
+					else
+					{
+						$this->load->model('m_akses');
+						$dt['user'] 	= $this->m_user->get_baris($id_user)->row();
+						$dt['akses'] 	= $this->m_akses->get_all();
+						$this->load->view('user/user_edit', $dt);
 					}
 				}
 			}
 		}
+	}
 
-		public function ubah_password()
-		{
+	public function ubah_password()
+	{
 		if($this->input->is_ajax_request())
 		{
 			if($_POST)
