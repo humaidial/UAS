@@ -18,12 +18,13 @@ $level = $this->session->userdata('ap_level');
 		</div>
 
 		<p class="navbar-text">Anda login sebagai <?php echo $this->session->userdata('ap_level_caption'); ?></p>
+
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-			<ul class="navbar navbar-nav">
+			<ul class="nav navbar-nav">
 
 				<?php if($level == 'admin' OR $level == 'keuangan' OR $level == 'kasir') { ?>
 				<li class="dropdown <?php if($controller == 'penjualan') { echo 'active'; } ?>">
-					<a href="#" class="dropdown-toggle" data-toogle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class='fa fa-shopping-cart fa-fw'></i> Penjualan <span class="caret"></span></a> 
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class='fa fa-shopping-cart fa-fw'></i> Penjualan <span class="caret"></span></a> 
 					<ul class="dropdown-menu">
 						<?php if($level !== 'keuangan'){ ?>
 						<li><a href="<?php echo site_url('penjualan/transaksi'); ?>"> Transaksi </a></li>
@@ -56,11 +57,11 @@ $level = $this->session->userdata('ap_level');
 
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
-					// <a href="#" class="dropdown-toggle" data-toogle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class='fa fa-user fa-fw'></i> <?php $this->session->userdata('ap_nama'); ?> <span class="caret"></span></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class='fa fa-user fa-fw'></i> <?php echo $this->session->userdata('ap_nama'); ?> <span class="caret"></span></a>
 					<ul class="dropdown-menu">
 						<li><a href="<?php echo site_url('user/ubah-password'); ?>" id='GantiPass'> Ubah Password</a></li>
 						<li role="separator" class="divider"></li>
-						<li><a href="<?php echo site_url('secure/logout'); ?>"><i class='fa fa-sign-out fa-fw'></i> Log Out</a></li>
+						<li><a href="<?php echo site_url('tampilanLogin/logout'); ?>"><i class='fa fa-sign-out fa-fw'></i> Log Out</a></li>
 					</ul>
 				</li>
 			</ul>

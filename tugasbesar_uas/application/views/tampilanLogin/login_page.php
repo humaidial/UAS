@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="login-panel">
 		<center>
-			<img src="<?php echo config_item('img'); ?>logo" />
+			<img src="<?php echo config_item('img'); ?>logo.png" />
 		</center>
 		<div class='panel panel-default'>
 			<div class='panel-body'>
